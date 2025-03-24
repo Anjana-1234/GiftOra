@@ -20,7 +20,7 @@ function CheckOptions() {
     let select = document.getElementById("bouquetOptions").value;
     let images = document.querySelectorAll(".product img");
 
-    let defaultImages = ["images/white.jpeg", "images/pink.jpeg", "images/red.jpeg", "images/yellow.jpeg", "images/blue.jpeg"];
+    let defaultImages = ["images/white.jpeg", "images/pink.jpeg", "images/red.jpeg", "images/yellow.jpeg", "images/blue.jpeg", "/images/multi.jpg"];
     let champagneImages = ["images/white_champagne.jpeg", "images/pink_champagne.jpeg", "images/red_champagne.jpeg", "images/yellow_champagne.jpeg", "images/blue_champagne.jpeg"];
 
     images.forEach((img, index) => {
@@ -38,7 +38,8 @@ function displayBouquet() {
             "pink": "2",
             "red": "3",
             "yellow": "4",
-            "blue": "5"
+            "blue": "5",
+            "multi" : "6"
         }[chosenBouquet];
 
         let productDiv = document.getElementById("product" + bouquetId).innerHTML;
@@ -50,7 +51,7 @@ function displayBouquet() {
 
 function resetOrder() {
     document.getElementById("order").innerHTML = "";
-    let defaultImages = ["images/white.jpeg", "images/pink.jpeg", "images/red.jpeg", "images/yellow.jpeg", "images/blue.jpeg"];
+    let defaultImages = ["images/white.jpeg", "images/pink.jpeg", "images/red.jpeg", "images/yellow.jpeg", "images/blue.jpeg", "images/multi.jpg"];
     let images = document.querySelectorAll(".product img");
 
     images.forEach((img, index) => {

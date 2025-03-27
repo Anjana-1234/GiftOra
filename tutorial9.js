@@ -5,7 +5,8 @@ document.addEventListener("DOMContentLoaded", function() {
         { id: 3, name: "Red Bouquet", price: 35, img: "images/red.jpeg", champagneImg: "images/red_champagne.jpeg" },
         { id: 4, name: "Yellow Bouquet", price: 42, img: "images/yellow.jpeg", champagneImg: "images/yellow_champagne.jpeg" },
         { id: 5, name: "Blue Bouquet", price: 28, img: "images/blue.jpeg", champagneImg: "images/blue_champagne.jpeg" },
-        { id: 6, name: "Multi Bouquet", price: 40, img: "images/multi.jpg", champagneImg: "images/multi_champagne.jpg" }
+        { id: 6, name: "Multi Bouquet", price: 40, img: "images/multi.jpg", champagneImg: "images/multi_champagne.jpeg" },
+        { id: 7, name: "Green Bouquet", price: 32, img: "images/green.jpg", champagneImg: "images/green_champagne.jpg" } // Added Green Bouquet
     ];
     
     const productList = document.getElementById("productList");

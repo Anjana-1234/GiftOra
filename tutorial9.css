@@ -79,5 +79,7 @@ button:hover {
     gap: 40px; /* Space between items */
     justify-content: center;
 }
-
+#totalPrice {
+    transition: opacity 0.3s ease;
+}
 

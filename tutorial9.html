@@ -9,7 +9,9 @@
 </head>
 <body>
     <nav class="navbar">
-        <div class="nav-logo"><img src="./images/logo.jpg" alt="logo" id="logo-image"> Valentine's Flowers</div>
+
+        <div class="nav-logo"><img src="./images/nav-logo.jpg" alt="logo" id="logo-image"> Valentine's Flowers</div>
+
         <div class="hamburger" onclick="toggleMenu()">☰</div>
         <ul class="nav-links" id="navLinks">
             <li><a href="#productList">Shop</a></li>
@@ -17,26 +19,46 @@
             <li><a href="#deliveryDate">Delivery</a></li>
         </ul>
     </nav>
-    
-    <header>
-        <h1> Order Now !</h1>
-    </header>
-    
-    <div class="container">  
+
+    <!-- Filters -->
+    <div class="filters">
+        <label for="sort">Sort by Price:</label>
+        <select id="sort">
+            <option value="default">Default</option>
+            <option value="asc">Low to High</option>
+            <option value="desc">High to Low</option>
+        </select>
+
+        <label for="filter">Filter by Color:</label>
+        <select id="filter">
+            <option value="all">All</option>
+            <option value="white">White</option>
+            <option value="pink">Pink</option>
+            <option value="red">Red</option>
+            <option value="yellow">Yellow</option>
+            <option value="blue">Blue</option>
+            <option value="multi">Multi</option>
+            <option value="green">Green</option>
+        </select>
+    </div>
+
+    <!-- Products -->
+    <div class="container">
         <div class="products" id="productList"></div>
     </div>
 
+    <!-- Order Section -->
     <div class="order-section">
         <h2>Your Order</h2>
         <div id="cart"></div>
         <p>Total: <span id="totalPrice">£0</span></p>
-        
+
         <label for="champagne" class="cham">Add Champagne (£10 extra):</label>
         <input type="checkbox" id="champagne" onchange="toggleChampagne()"> <br><br>
-        
+
         <label for="deliveryDate">Delivery Date:</label>
-        <input type="date" id="deliveryDate"> <br> <br>
-        
+        <input type="date" id="deliveryDate"> <br><br>
+
         <button id="checkout">Checkout</button>
     </div>
 

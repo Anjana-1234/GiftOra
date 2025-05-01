@@ -15,11 +15,30 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function renderProducts() {
         productList.innerHTML = "";
-        products.forEach(product => {
+
+        let filteredProducts = [...products];
+        const sortValue = document.getElementById("sort").value;
+        const filterValue = document.getElementById("filter").value;
+
+        // Filter
+        if (filterValue !== "all") {
+            filteredProducts = filteredProducts.filter(p =>
+                p.name.toLowerCase().includes(filterValue)
+            );
+        }
+
+        // Sort
+        if (sortValue === "asc") {
+            filteredProducts.sort((a, b) => a.price - b.price);
+        } else if (sortValue === "desc") {
+            filteredProducts.sort((a, b) => b.price - a.price);
+        }
+
+        filteredProducts.forEach(product => {
             const productDiv = document.createElement("div");
             productDiv.classList.add("product");
             productDiv.innerHTML = `
-                <img id="img${product.id}" src="${product.img}" alt="${product.name}">
+                <img id="img${product.id}" src="${champagneAdded ? product.champagneImg : product.img}" alt="${product.name}">
                 <h3>${product.name}</h3>
                 <p>£${product.price}</p>
                 <button onclick="addToCart(${product.id})">Add to Cart</button>
@@ -66,7 +85,6 @@ document.addEventListener("DOMContentLoaded", function () {
         renderCart();
     };
 
-    // Animate total price counter
     function animatePrice(element, newTotal) {
         const current = parseFloat(element.textContent.replace("£", "")) || 0;
         const duration = 500;
@@ -86,7 +104,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }, stepTime);
     }
 
-    // Checkout with delivery date validation
     document.getElementById("checkout").addEventListener("click", function () {
         const deliveryDate = document.getElementById("deliveryDate").value;
 
@@ -108,14 +125,19 @@ document.addEventListener("DOMContentLoaded", function () {
         alert("Thank you! Your order has been placed.");
     });
 
-    // Set min date in delivery input
+    // Set min date for delivery
     const deliveryInput = document.getElementById("deliveryDate");
     const today = new Date().toISOString().split("T")[0];
     deliveryInput.setAttribute("min", today);
 
+    // Sort/filter listeners
+    document.getElementById("sort").addEventListener("change", renderProducts);
+    document.getElementById("filter").addEventListener("change", renderProducts);
+
     renderProducts();
 });
 
+// Hamburger toggle (outside DOMContentLoaded)
 function toggleMenu() {
     document.getElementById("navLinks").classList.toggle("show");
 }

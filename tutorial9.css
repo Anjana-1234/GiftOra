@@ -190,4 +190,17 @@ button:hover {
     }
 }
 
+.filters {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin: 20px 0;
+    flex-wrap: wrap;
+}
+
+.filters label,
+.filters select {
+    font-size: 16px;
+    color: #b61d69;
+}
 

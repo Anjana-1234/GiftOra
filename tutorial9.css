@@ -25,7 +25,7 @@ body {
     display: flex;
     align-items: center;
     gap: 10px;
-    font-size: 20px;
+    font-size: 30px;
     color: white;
 }
 
@@ -39,14 +39,15 @@ body {
 .nav-links {
     list-style: none;
     display: flex;
-    gap: 20px;
+    gap: 25px;
     margin: 0;
 }
 
 .nav-links li a {
     text-decoration: none;
     color: white;
-    font-weight: 500;
+    font-weight: 800;
+    font-size: larger;
     transition: opacity 0.3s;
 }
 

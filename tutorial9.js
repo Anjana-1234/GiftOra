@@ -10,8 +10,15 @@ document.addEventListener("DOMContentLoaded", function () {
     ];
 
     const productList = document.getElementById("productList");
-    const cart = [];
-    let champagneAdded = false;
+
+    // Load saved state or default
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    let champagneAdded = JSON.parse(localStorage.getItem("champagne")) || false;
+
+    function saveToLocalStorage() {
+        localStorage.setItem("cart", JSON.stringify(cart));
+        localStorage.setItem("champagne", JSON.stringify(champagneAdded));
+    }
 
     function renderProducts() {
         productList.innerHTML = "";
@@ -20,14 +27,14 @@ document.addEventListener("DOMContentLoaded", function () {
         const sortValue = document.getElementById("sort").value;
         const filterValue = document.getElementById("filter").value;
 
-        // Filter
+        // Filter by color
         if (filterValue !== "all") {
             filteredProducts = filteredProducts.filter(p =>
                 p.name.toLowerCase().includes(filterValue)
             );
         }
 
-        // Sort
+        // Sort by price
         if (sortValue === "asc") {
             filteredProducts.sort((a, b) => a.price - b.price);
         } else if (sortValue === "desc") {
@@ -56,6 +63,7 @@ document.addEventListener("DOMContentLoaded", function () {
             cart.push({ ...product, quantity: 1 });
         }
         renderCart();
+        saveToLocalStorage();
     };
 
     function renderCart() {
@@ -83,6 +91,7 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById(`img${product.id}`).src = champagneAdded ? product.champagneImg : product.img;
         });
         renderCart();
+        saveToLocalStorage();
     };
 
     function animatePrice(element, newTotal) {
@@ -125,19 +134,23 @@ document.addEventListener("DOMContentLoaded", function () {
         alert("Thank you! Your order has been placed.");
     });
 
-    // Set min date for delivery
     const deliveryInput = document.getElementById("deliveryDate");
     const today = new Date().toISOString().split("T")[0];
     deliveryInput.setAttribute("min", today);
 
-    // Sort/filter listeners
+    // Restore saved champagne state
+    document.getElementById("champagne").checked = champagneAdded;
+
+    // Setup event listeners for sort/filter
     document.getElementById("sort").addEventListener("change", renderProducts);
     document.getElementById("filter").addEventListener("change", renderProducts);
 
     renderProducts();
+    renderCart(); // Show previously saved cart
+    toggleChampagne(); // Update bouquet images
 });
 
-// Hamburger toggle (outside DOMContentLoaded)
+// Hamburger menu toggle (for mobile nav)
 function toggleMenu() {
     document.getElementById("navLinks").classList.toggle("show");
 }

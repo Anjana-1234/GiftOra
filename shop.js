@@ -1,25 +1,20 @@
-window.addToCart = function (id) {
-    const product = products.find(p => p.id === id);
-    let cart = JSON.parse(localStorage.getItem("cart")) || [];
-    // ... rest of the function remains the same
-    localStorage.setItem("cart", JSON.stringify(cart));
-    renderCart();
-};
-
 document.addEventListener("DOMContentLoaded", function () {
     const products = [
-        { id: 1, name: "White Bouquet", price: 24, img: "images/white.jpeg", champagneImg: "images/white_champagne.jpeg" },
-        { id: 2, name: "Pink Bouquet", price: 30, img: "images/pink.jpeg", champagneImg: "images/pink_champagne.jpeg" },
-        { id: 3, name: "Red Bouquet", price: 35, img: "images/red.jpeg", champagneImg: "images/red_champagne.jpeg" },
-        { id: 4, name: "Yellow Bouquet", price: 42, img: "images/yellow.jpeg", champagneImg: "images/yellow_champagne.jpeg" },
-        { id: 5, name: "Blue Bouquet", price: 28, img: "images/blue.jpeg", champagneImg: "images/blue_champagne.jpeg" },
-        { id: 6, name: "Multi Bouquet", price: 40, img: "images/multi.jpg", champagneImg: "images/multi_champagne.jpeg" },
-        { id: 7, name: "Green Bouquet", price: 32, img: "images/green.jpg", champagneImg: "images/green_champagne.jpg" }
+        { id: 1, name: "White Bouquet", price: 24, color: "white", img: "images/white.jpeg", champagneImg: "images/white_champagne.jpeg" },
+        { id: 2, name: "Pink Bouquet", price: 30, color: "pink", img: "images/pink.jpeg", champagneImg: "images/pink_champagne.jpeg" },
+        { id: 3, name: "Red Bouquet", price: 35, color: "red", img: "images/red.jpeg", champagneImg: "images/red_champagne.jpeg" },
+        { id: 4, name: "Yellow Bouquet", price: 42, color: "yellow", img: "images/yellow.jpeg", champagneImg: "images/yellow_champagne.jpeg" },
+        { id: 5, name: "Blue Bouquet", price: 28, color: "blue", img: "images/blue.jpeg", champagneImg: "images/blue_champagne.jpeg" },
+        { id: 6, name: "Multi Bouquet", price: 40, color: "multi", img: "images/multi.jpg", champagneImg: "images/multi_champagne.jpeg" },
+        { id: 7, name: "Green Bouquet", price: 32, color: "green", img: "images/green.jpg", champagneImg: "images/green_champagne.jpg" }
     ];
 
     const productList = document.getElementById("productList");
-    const cart = [];
     let champagneAdded = false;
+
+    // Initialize cart from localStorage or create empty array
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    let champagne = JSON.parse(localStorage.getItem("champagne")) || false;
 
     function renderProducts() {
         productList.innerHTML = "";
@@ -28,25 +23,24 @@ document.addEventListener("DOMContentLoaded", function () {
         const sortValue = document.getElementById("sort").value;
         const filterValue = document.getElementById("filter").value;
 
-        // Filter
+        // Filter by color
         if (filterValue !== "all") {
-            filteredProducts = filteredProducts.filter(p =>
-                p.name.toLowerCase().includes(filterValue)
-            );
+            filteredProducts = filteredProducts.filter(p => p.color === filterValue);
         }
 
-        // Sort
+        // Sort by price
         if (sortValue === "asc") {
             filteredProducts.sort((a, b) => a.price - b.price);
         } else if (sortValue === "desc") {
             filteredProducts.sort((a, b) => b.price - a.price);
         }
 
+        // Render products
         filteredProducts.forEach(product => {
             const productDiv = document.createElement("div");
             productDiv.classList.add("product");
             productDiv.innerHTML = `
-                <img id="img${product.id}" src="${champagneAdded ? product.champagneImg : product.img}" alt="${product.name}">
+                <img id="img${product.id}" src="${champagne ? product.champagneImg : product.img}" alt="${product.name}">
                 <h3>${product.name}</h3>
                 <p>£${product.price}</p>
                 <button onclick="addToCart(${product.id})">Add to Cart</button>
@@ -57,12 +51,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
     window.addToCart = function (id) {
         const product = products.find(p => p.id === id);
-        const cartItem = cart.find(item => item.id === id);
-        if (cartItem) {
-            cartItem.quantity++;
+        const existingItem = cart.find(item => item.id === id);
+
+        if (existingItem) {
+            existingItem.quantity++;
         } else {
             cart.push({ ...product, quantity: 1 });
         }
+
+        localStorage.setItem("cart", JSON.stringify(cart));
         renderCart();
     };
 
@@ -77,76 +74,38 @@ document.addEventListener("DOMContentLoaded", function () {
             cartDiv.innerHTML += `<p>${item.name} (x${item.quantity}) - £${item.price * item.quantity}</p>`;
         });
 
-        if (champagneAdded) {
+        if (champagne) {
             total += 10;
-            cartDiv.innerHTML += `<p>Champagne Added - £10</p>`;
+            cartDiv.innerHTML += `<p>Champagne - £10</p>`;
         }
 
-        animatePrice(totalPriceEl, total);
+        totalPriceEl.textContent = `£${total.toFixed(2)}`;
     }
 
-    window.toggleChampagne = function () {
-        champagneAdded = document.getElementById("champagne").checked;
-        products.forEach(product => {
-            document.getElementById(`img${product.id}`).src = champagneAdded ? product.champagneImg : product.img;
-        });
+    // Champagne checkbox
+    document.getElementById("champagne").addEventListener("change", function() {
+        champagne = this.checked;
+        localStorage.setItem("champagne", JSON.stringify(champagne));
+        renderProducts();
         renderCart();
-    };
-
-    function animatePrice(element, newTotal) {
-        const current = parseFloat(element.textContent.replace("£", "")) || 0;
-        const duration = 500;
-        const stepTime = 20;
-        const steps = duration / stepTime;
-        const increment = (newTotal - current) / steps;
-
-        let count = 0;
-        const interval = setInterval(() => {
-            count++;
-            const updated = current + increment * count;
-            element.textContent = `£${updated.toFixed(2)}`;
-            if (count >= steps) {
-                clearInterval(interval);
-                element.textContent = `£${newTotal.toFixed(2)}`;
-            }
-        }, stepTime);
-    }
-
-    document.getElementById("checkout").addEventListener("click", function () {
-        const deliveryDate = document.getElementById("deliveryDate").value;
-
-        if (!deliveryDate) {
-            alert("Please select a delivery date.");
-            return;
-        }
-
-        const selectedDate = new Date(deliveryDate);
-        const today = new Date();
-        selectedDate.setHours(0, 0, 0, 0);
-        today.setHours(0, 0, 0, 0);
-
-        if (selectedDate <= today) {
-            alert("Please select a future date for delivery.");
-            return;
-        }
-
-        alert("Thank you! Your order has been placed.");
     });
 
-    // Set min date for delivery
-    const deliveryInput = document.getElementById("deliveryDate");
-    const today = new Date().toISOString().split("T")[0];
-    deliveryInput.setAttribute("min", today);
+    // Initialize champagne checkbox
+    document.getElementById("champagne").checked = champagne;
+
+    window.proceedToCart = function() {
+        if (cart.length === 0) {
+            alert("Please add items to your cart first");
+            return;
+        }
+        window.location.href = "cart.html";
+    };
 
     // Sort/filter listeners
     document.getElementById("sort").addEventListener("change", renderProducts);
     document.getElementById("filter").addEventListener("change", renderProducts);
 
+    // Initial render
     renderProducts();
+    renderCart();
 });
-
-// Hamburger toggle (outside DOMContentLoaded)
-function toggleMenu() {
-    document.getElementById("navLinks").classList.toggle("show");
-}
-

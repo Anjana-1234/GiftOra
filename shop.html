@@ -9,9 +9,7 @@
 </head>
 <body>
     <nav class="navbar">
-
         <div class="nav-logo"><img src="./images/logo.jpg" alt="logo" id="logo-image"> Valentine's Flowers</div>
-
         <div class="hamburger" onclick="toggleMenu()">☰</div>
         <ul class="nav-links" id="navLinks">
             <li><a href="shop.html">Shop</a></li>
@@ -19,9 +17,7 @@
             <li><a href="delivery.html">Delivery</a></li>
         </ul>
     </nav>
-    <h1>Order Now !</h1> 
-
-    <!-- Filters -->
+    <h1>Order Now!</h1>
 
     <div class="filters">
         <label for="sort">Sort by Price:</label>
@@ -44,38 +40,26 @@
         </select>
     </div>
 
-    <!-- Products -->
     <div class="container">
         <div class="products" id="productList"></div>
     </div>
 
-    <!-- Order Section -->
     <div class="order-section">
         <h2>Your Order</h2>
         <div id="cart"></div>
         <p>Total: <span id="totalPrice">£0</span></p>
 
         <label for="champagne" class="cham">Add Champagne (£10 extra):</label>
-        <input type="checkbox" id="champagne" onchange="toggleChampagne()"> <br><br>
+        <input type="checkbox" id="champagne"> <br><br>
 
-        <label for="deliveryDate">Delivery Date:</label>
-        <input type="date" id="deliveryDate"> <br><br>
-
-        <a href="./cart.html"><button id="checkout">Checkout</button></a>
+        <button onclick="proceedToCart()">Proceed to Cart</button>
     </div>
-
-    <!-- Checkout Confirmation Modal -->
-    <div id="checkoutModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <h2>Order Confirmation</h2>
-            <div id="orderSummary"></div>
-            <p><strong>Total:</strong> <span id="modalTotal">£0</span></p>
-            <p><strong>Delivery Date:</strong> <span id="modalDate"></span></p>
-        </div>
-    </div>
-
 
     <script src="shop.js"></script>
+    <script>
+        function toggleMenu() {
+            document.getElementById("navLinks").classList.toggle("show");
+        }
+    </script>
 </body>
 </html>

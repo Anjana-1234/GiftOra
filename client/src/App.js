@@ -1,7 +1,7 @@
 function App() {
   return (
-    <div>
-      <h1>Valentine's Flowers 🌸</h1>
+    <div style={{ padding: '20px' }}>
+      <h1 style={{ color: 'hotpink' }}>Valentine's Flowers 🌸</h1>
     </div>
   );
 }

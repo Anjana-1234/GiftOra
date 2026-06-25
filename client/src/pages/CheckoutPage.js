@@ -1,10 +1,7 @@
 // useState to manage form input values and submission status
 import { useState } from 'react';
 
-// useNavigate lets us redirect the user to another page after order is placed
-import { useNavigate } from 'react-router-dom';
-
-// Import our cart context to get items, total, and a way to clear the cart after order
+// Import our cart context to get items and total
 import { useCart } from '../context/CartContext';
 
 // Import our pre-configured axios instance
@@ -12,11 +9,8 @@ import api from '../api/axiosConfig';
 
 function CheckoutPage() {
 
-  // Get cart items, total, and a way to empty the cart after successful order
-  const { cartItems, getCartTotal, clearCart } = useCart();
-
-  // Lets us programmatically change the page after order succeeds
-  const navigate = useNavigate();
+  // Get cart items and total from our shared cart context
+  const { cartItems, getCartTotal } = useCart();
 
   // Holds the values typed into the form
   const [formData, setFormData] = useState({
@@ -25,14 +19,13 @@ function CheckoutPage() {
     phone: '',
   });
 
-  // Tracks whether the order is currently being submitted (to disable button, show loading)
+  // Tracks whether we're currently redirecting to Stripe (to disable button, show loading)
   const [submitting, setSubmitting] = useState(false);
 
-  // Tracks any error message if order submission fails
+  // Tracks any error message if something fails
   const [error, setError] = useState(null);
 
   // Runs every time the user types in an input field
-  // Updates the matching field in formData based on its "name" attribute
   function handleChange(e) {
     setFormData({
       ...formData,
@@ -40,17 +33,20 @@ function CheckoutPage() {
     });
   }
 
-  // Runs when the form is submitted
+  // Runs when the form is submitted - sends user to Stripe's payment page
   async function handleSubmit(e) {
-    // Prevent the default browser page-refresh behavior on form submit
     e.preventDefault();
 
     setSubmitting(true);
     setError(null);
 
     try {
-      // Build the order object to send to our backend
-      const orderData = {
+      // Save the delivery details temporarily in the browser's sessionStorage
+      // We need these AFTER Stripe redirects back, to actually save the order
+      sessionStorage.setItem('checkoutDetails', JSON.stringify({
+        customerName: formData.customerName,
+        address: formData.address,
+        phone: formData.phone,
         items: cartItems.map((item) => ({
           name: item.name,
           price: item.price,
@@ -58,27 +54,23 @@ function CheckoutPage() {
           type: item.type,
         })),
         totalAmount: getCartTotal(),
-        customerName: formData.customerName,
-        address: formData.address,
-        phone: formData.phone,
-      };
+      }));
 
-      // Send POST request to /api/orders
-      const response = await api.post('/orders', orderData);
+      // Ask our backend to create a Stripe Checkout session
+      const response = await api.post('/stripe/create-checkout-session', {
+        items: cartItems,
+      });
 
-      // Clear the cart now that the order has been saved
-      clearCart();
-
-      // Redirect to a confirmation page, passing the new order's ID in the URL
-      navigate(`/order-confirmation/${response.data._id}`);
+      // Redirect the browser to Stripe's hosted payment page
+      window.location.href = response.data.url;
 
     } catch (err) {
-      setError('Something went wrong placing your order. Please try again.');
+      setError('Something went wrong starting payment. Please try again.');
       setSubmitting(false);
     }
   }
 
-  // If cart is empty, don't allow checkout - redirect-style message
+  // If cart is empty, don't allow checkout
   if (cartItems.length === 0) {
     return (
       <div style={{ padding: '60px', textAlign: 'center' }}>
@@ -93,7 +85,7 @@ function CheckoutPage() {
 
       <h1 style={{ color: '#e91e8c', textAlign: 'center' }}>Checkout 🌸</h1>
 
-      {/* Order summary - quick recap of what's being ordered */}
+      {/* Order summary */}
       <div style={{
         backgroundColor: '#fff0f5',
         borderRadius: '10px',
@@ -189,12 +181,12 @@ function CheckoutPage() {
           />
         </div>
 
-        {/* Show error message if order submission failed */}
+        {/* Show error message if something failed */}
         {error && (
           <p style={{ color: 'red', fontSize: '14px', marginBottom: '15px' }}>{error}</p>
         )}
 
-        {/* Submit button - disabled while submitting to prevent double-orders */}
+        {/* Submit button - redirects to Stripe when clicked */}
         <button
           type="submit"
           disabled={submitting}
@@ -210,7 +202,7 @@ function CheckoutPage() {
             fontWeight: 'bold'
           }}
         >
-          {submitting ? 'Placing Order...' : 'Place Order'}
+          {submitting ? 'Redirecting to payment...' : 'Pay with Card'}
         </button>
 
       </form>

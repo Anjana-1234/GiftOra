@@ -14,6 +14,7 @@ import GiftsPage from './pages/GiftsPage';
 import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
 import OrderConfirmationPage from './pages/OrderConfirmationPage';
+import PaymentSuccessPage from './pages/PaymentSuccessPage';
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
           <Route path="/cart" element={<CartPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/order-confirmation/:id" element={<OrderConfirmationPage />} />
+          <Route path="/payment-success" element={<PaymentSuccessPage />} />
         </Routes>
 
       </BrowserRouter>

@@ -16,6 +16,9 @@ const productRoutes = require('./routes/productRoutes');
 //Import our order routes
 const orderRoutes = require('./routes/orderRoutes');
 
+// Import our stripe
+const stripeRoutes = require('./routes/stripeRoutes');
+
 // Create the express app
 const app = express();
 
@@ -39,6 +42,9 @@ app.use('/api/products', productRoutes);
 
 //Tell express to use our order routes for any URL starting with /api/orders
 app.use('/api/orders', orderRoutes);
+
+//Tell express to use our striperoutes for any URL starting with /api/stripe
+app.use('/api/stripe', stripeRoutes);
 
 // A simple test route - visiting this in browser confirms server works
 app.get('/', (req, res) => {

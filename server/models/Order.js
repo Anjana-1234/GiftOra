@@ -46,6 +46,22 @@ const orderSchema = new mongoose.Schema({
     default: 'pending', // every new order starts as pending
   },
 
+  // How the customer is paying - card (via Stripe) or cash on delivery
+  paymentMethod: {
+    type: String,
+    enum: ['card', 'cash'],
+    required: true,
+  },
+
+  // Whether payment has actually been received
+  // Card payments are marked 'paid' only after Stripe confirms success
+  // Cash payments stay 'unpaid' until the delivery person collects payment
+  paymentStatus: {
+    type: String,
+    enum: ['paid', 'unpaid'],
+    default: 'unpaid',
+  },
+
 }, {
   // Adds createdAt and updatedAt automatically
   timestamps: true,

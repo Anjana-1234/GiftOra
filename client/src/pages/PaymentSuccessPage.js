@@ -41,6 +41,9 @@ function PaymentSuccessPage() {
         // Parse the JSON string back into an object
         const orderData = JSON.parse(savedDetails);
 
+        // Mark payment as completed since Stripe confirmed success before redirecting here
+        orderData.paymentStatus = 'paid';
+
         // Save the order to MongoDB now that payment has succeeded
         const response = await api.post('/orders', orderData);
 
@@ -67,7 +70,7 @@ function PaymentSuccessPage() {
     return (
       <div style={{ padding: '60px', textAlign: 'center' }}>
         <p style={{ fontSize: '18px', color: '#e91e8c' }}>
-          Payment successful! Saving your order... 
+          Payment successful! Saving your order...
         </p>
       </div>
     );

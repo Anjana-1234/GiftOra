@@ -70,6 +70,10 @@ function OrderConfirmationPage() {
       }}>
         <p style={{ margin: '5px 0' }}><strong>Order ID:</strong> {order._id}</p>
         <p style={{ margin: '5px 0' }}><strong>Status:</strong> {order.status}</p>
+        <p style={{ margin: '5px 0' }}>
+          <strong>Payment:</strong> {order.paymentMethod === 'card' ? ' Card' : ' Cash on Delivery'}
+          {' '}({order.paymentStatus === 'paid' ? 'Paid' : 'Pay on delivery'})
+        </p>
         <p style={{ margin: '5px 0' }}><strong>Delivery Address:</strong> {order.address}</p>
         <p style={{ margin: '5px 0' }}><strong>Phone:</strong> {order.phone}</p>
 

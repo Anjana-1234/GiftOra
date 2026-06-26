@@ -1,7 +1,10 @@
 // useState to manage form input values and submission status
 import { useState } from 'react';
 
-// Import our cart context to get items and total
+// useNavigate lets us redirect after a cash order is placed
+import { useNavigate } from 'react-router-dom';
+
+// Import our cart context to get items and total, and clearCart for cash orders
 import { useCart } from '../context/CartContext';
 
 // Import our pre-configured axios instance
@@ -9,8 +12,11 @@ import api from '../api/axiosConfig';
 
 function CheckoutPage() {
 
-  // Get cart items and total from our shared cart context
-  const { cartItems, getCartTotal } = useCart();
+  // Get cart items, total, and clearCart from our shared cart context
+  const { cartItems, getCartTotal, clearCart } = useCart();
+
+  // Lets us redirect to confirmation page after a cash order
+  const navigate = useNavigate();
 
   // Holds the values typed into the form
   const [formData, setFormData] = useState({
@@ -19,7 +25,10 @@ function CheckoutPage() {
     phone: '',
   });
 
-  // Tracks whether we're currently redirecting to Stripe (to disable button, show loading)
+  // Tracks which payment method the user picked - "card" or "cash"
+  const [paymentMethod, setPaymentMethod] = useState('card');
+
+  // Tracks whether we're currently submitting (to disable button, show loading)
   const [submitting, setSubmitting] = useState(false);
 
   // Tracks any error message if something fails
@@ -33,7 +42,24 @@ function CheckoutPage() {
     });
   }
 
-  // Runs when the form is submitted - sends user to Stripe's payment page
+  // Builds the order data object shared by both payment methods
+  function buildOrderData() {
+    return {
+      customerName: formData.customerName,
+      address: formData.address,
+      phone: formData.phone,
+      items: cartItems.map((item) => ({
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity,
+        type: item.type,
+      })),
+      totalAmount: getCartTotal(),
+      paymentMethod: paymentMethod,
+    };
+  }
+
+  // Runs when the form is submitted
   async function handleSubmit(e) {
     e.preventDefault();
 
@@ -41,31 +67,34 @@ function CheckoutPage() {
     setError(null);
 
     try {
-      // Save the delivery details temporarily in the browser's sessionStorage
-      // We need these AFTER Stripe redirects back, to actually save the order
-      sessionStorage.setItem('checkoutDetails', JSON.stringify({
-        customerName: formData.customerName,
-        address: formData.address,
-        phone: formData.phone,
-        items: cartItems.map((item) => ({
-          name: item.name,
-          price: item.price,
-          quantity: item.quantity,
-          type: item.type,
-        })),
-        totalAmount: getCartTotal(),
-      }));
+      if (paymentMethod === 'card') {
+        // CARD FLOW - redirect to Stripe, order gets saved after payment succeeds
 
-      // Ask our backend to create a Stripe Checkout session
-      const response = await api.post('/stripe/create-checkout-session', {
-        items: cartItems,
-      });
+        // Save the order details temporarily so PaymentSuccessPage can use them
+        sessionStorage.setItem('checkoutDetails', JSON.stringify(buildOrderData()));
 
-      // Redirect the browser to Stripe's hosted payment page
-      window.location.href = response.data.url;
+        // Ask our backend to create a Stripe Checkout session
+        const response = await api.post('/stripe/create-checkout-session', {
+          items: cartItems,
+        });
+
+        // Redirect the browser to Stripe's hosted payment page
+        window.location.href = response.data.url;
+
+      } else {
+        // CASH FLOW - no Stripe needed, save the order directly right now
+
+        const response = await api.post('/orders', buildOrderData());
+
+        // Empty the cart since the order is now placed
+        clearCart();
+
+        // Go straight to the confirmation page
+        navigate(`/order-confirmation/${response.data._id}`);
+      }
 
     } catch (err) {
-      setError('Something went wrong starting payment. Please try again.');
+      setError('Something went wrong placing your order. Please try again.');
       setSubmitting(false);
     }
   }
@@ -181,12 +210,65 @@ function CheckoutPage() {
           />
         </div>
 
+        {/* Payment method selection */}
+        <div style={{ marginBottom: '20px' }}>
+          <label style={{ display: 'block', marginBottom: '10px', fontWeight: 'bold' }}>
+            Payment Method
+          </label>
+
+          <div style={{ display: 'flex', gap: '12px' }}>
+
+            {/* Card option */}
+            <label style={{
+              flex: 1,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              border: paymentMethod === 'card' ? '2px solid #e91e8c' : '1px solid #ccc',
+              borderRadius: '8px',
+              padding: '12px',
+              cursor: 'pointer'
+            }}>
+              <input
+                type="radio"
+                name="paymentMethod"
+                value="card"
+                checked={paymentMethod === 'card'}
+                onChange={() => setPaymentMethod('card')}
+              />
+               Pay with Card
+            </label>
+
+            {/* Cash option */}
+            <label style={{
+              flex: 1,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              border: paymentMethod === 'cash' ? '2px solid #e91e8c' : '1px solid #ccc',
+              borderRadius: '8px',
+              padding: '12px',
+              cursor: 'pointer'
+            }}>
+              <input
+                type="radio"
+                name="paymentMethod"
+                value="cash"
+                checked={paymentMethod === 'cash'}
+                onChange={() => setPaymentMethod('cash')}
+              />
+               Cash on Delivery
+            </label>
+
+          </div>
+        </div>
+
         {/* Show error message if something failed */}
         {error && (
           <p style={{ color: 'red', fontSize: '14px', marginBottom: '15px' }}>{error}</p>
         )}
 
-        {/* Submit button - redirects to Stripe when clicked */}
+        {/* Submit button text changes based on payment method */}
         <button
           type="submit"
           disabled={submitting}
@@ -202,7 +284,11 @@ function CheckoutPage() {
             fontWeight: 'bold'
           }}
         >
-          {submitting ? 'Redirecting to payment...' : 'Pay with Card'}
+          {submitting
+            ? 'Processing...'
+            : paymentMethod === 'card'
+              ? 'Proceed to Payment'
+              : 'Place Order (Cash on Delivery)'}
         </button>
 
       </form>

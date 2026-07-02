@@ -16,6 +16,9 @@ function Navbar() {
   // Get the logged-in user (or null) and the logout function
   const { user, logout } = useAuth();
 
+  // Check if current user is admin - safely handles missing isAdmin field
+  const isAdmin = user && (user.isAdmin === true);
+
   return (
     // Main navbar container with pink background
     <nav style={{
@@ -62,23 +65,29 @@ function Navbar() {
           Cart 🛒 {getCartCount() > 0 && `(${getCartCount()})`}
         </Link>
 
-        {/* Shows "Hi, [name]" + Logout if logged in, otherwise shows Login link */}
+        {/* Shows "Hi, [name]" + Admin + Logout if logged in, otherwise shows Login link */}
         {user ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+
+            {/* Greeting */}
             <span style={{ color: 'white', fontSize: '15px' }}>Hi, {user.name}</span>
-            {/* Only show Admin link if the user is an admin */}
-            {user.isAdmin && (
+
+            {/* Admin button - only visible if isAdmin is exactly true */}
+            {isAdmin && (
               <Link to="/admin" style={{
                 color: 'white',
                 textDecoration: 'none',
                 fontSize: '14px',
                 border: '1px solid white',
                 padding: '4px 10px',
-                borderRadius: '6px'
+                borderRadius: '6px',
+                backgroundColor: 'rgba(255,255,255,0.15)'
               }}>
-                Admin
+                ⚙️ Admin
               </Link>
             )}
+
+            {/* Logout button */}
             <button
               onClick={logout}
               style={{
@@ -93,6 +102,7 @@ function Navbar() {
             >
               Logout
             </button>
+
           </div>
         ) : (
           <Link to="/login" style={{

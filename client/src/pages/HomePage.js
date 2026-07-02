@@ -28,15 +28,17 @@ function HomePage() {
         <div style={{
           position: 'absolute',
           top: 0, left: 0, right: 0, bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.30)',
+          backgroundColor: 'rgba(0, 0, 0, 0.20)',
         }} />
 
         {/* Hero content - centered over the overlay */}
         <div style={{
-          position: 'relative',
+          position: 'absolute',
+          right: '80px',
+          top: '58%',
+          transform: 'translateY(-50%)',
           zIndex: 1,
           textAlign: 'center',
-          padding: '20px',
           maxWidth: '700px',
         }}>
 
@@ -58,11 +60,11 @@ function HomePage() {
 
           {/* Main heading */}
           <h1 style={{
-            color: 'white',
-            fontSize: 'clamp(28px, 5vw, 52px)', // scales with screen size
+            color: 'rgba(121, 29, 83, 0.9)',
+            fontSize: 'clamp(30px, 5vw, 72px)', // scales with screen size
             fontWeight: 'bold',
             margin: '0 0 10px 0',
-            textShadow: '2px 2px 8px rgba(0,0,0,0.5)',
+            textShadow: '2px 2px 8px rgba(0,0,0,0.25)',
             letterSpacing: '2px'
           }}>
             Giftora
@@ -70,23 +72,23 @@ function HomePage() {
 
           {/* Tagline */}
           <p style={{
-            color: 'white',
-            fontSize: 'clamp(13px, 2.5vw, 18px)',
+            color: 'rgba(95, 30, 60, 0.9)',
+            fontSize: 'clamp(13px, 7.5vw, 25px)',
             margin: '0 0 8px 0',
             letterSpacing: '3px',
             textTransform: 'uppercase',
-            textShadow: '1px 1px 4px rgba(0,0,0,0.5)'
+            textShadow: '1px 1px 4px rgba(0,0,0,0.25)'
           }}>
             Flowers • Gifts • Moments
           </p>
 
           {/* Description */}
           <p style={{
-            color: 'rgba(255,255,255,0.9)',
-            fontSize: 'clamp(13px, 2vw, 16px)',
+            color: 'rgba(104, 37, 76, 0.9)',
+            fontSize: 'clamp(18px, 2.5vw, 18px)',
             margin: '15px 0 35px 0',
             lineHeight: '1.7',
-            textShadow: '1px 1px 4px rgba(0,0,0,0.5)'
+            textShadow: '1px 1px 4px rgba(0,0,0,0.15)'
           }}>
             Discover our beautiful collection of fresh flower bouquets and
             thoughtful gifts. Perfect for every occasion - delivered with love.

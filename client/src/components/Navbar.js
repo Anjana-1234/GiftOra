@@ -36,12 +36,12 @@ function Navbar() {
     <>
       {/* Main navbar */}
       <nav style={{
-        backgroundColor: '#e91e8c',
-        padding: '10px 30px',
+        backgroundColor: '#ffffff',
+        padding: '15px 20px',
         position: 'sticky',
         top: 0,
         zIndex: 999,
-        boxShadow: '0 2px 15px rgba(233,30,140,0.3)'
+        boxShadow: '0 2px 15px rgba(207, 21, 124, 0.3)'
       }}>
 
         {/* Inner wrapper - rounded pill shape like sample */}
@@ -51,9 +51,9 @@ function Navbar() {
           alignItems: 'center',
           maxWidth: '1200px',
           margin: '0 auto',
-          backgroundColor: '#e91e8c',
+          backgroundColor: '#832c5c',
           borderRadius: '50px',
-          padding: '6px 10px'
+          padding: '15px 20px'
         }}>
 
           {/* Left — Logo + name */}
@@ -82,7 +82,7 @@ function Navbar() {
             />
             <span style={{
               color: 'white',
-              fontSize: '22px',
+              fontSize: '25px',
               fontWeight: 'bold',
               letterSpacing: '1px'
             }}>
@@ -110,7 +110,7 @@ function Navbar() {
                 style={{
                   color: 'white',
                   textDecoration: 'none',
-                  fontSize: '15px',
+                  fontSize: 'px',
                   fontWeight: isActive(link.to) ? 'bold' : '500',
                   padding: '6px 4px',
                   borderBottom: isActive(link.to)

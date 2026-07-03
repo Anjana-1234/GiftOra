@@ -35,7 +35,7 @@ function HomePage() {
         <div style={{
           position: 'absolute',
           right: '80px',
-          top: '58%',
+          top: '50%',
           transform: 'translateY(-50%)',
           zIndex: 1,
           textAlign: 'center',

@@ -28,10 +28,16 @@ const productSchema = new mongoose.Schema({
     default: null,
   },
 
-  // Short description shown in the popup modal when user clicks on item
   description: {
     type: String,
     default: '',
+  },
+
+  // Available stock quantity - admin can update this
+  availableQuantity: {
+    type: Number,
+    default: 100, // default 100 for existing products
+    min: 0,
   },
 
 }, {

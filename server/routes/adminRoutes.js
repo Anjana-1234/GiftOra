@@ -1,24 +1,17 @@
-// Import express to create a router
 const express = require('express');
 const router = express.Router();
-
-// Import our auth middleware to protect these routes
 const { protect, adminOnly } = require('../middleware/authMiddleware');
-
-// Import all models we need
 const Order = require('../models/Order');
 const Product = require('../models/Product');
 const User = require('../models/User');
 
-// All routes below are protected - user must be logged in AND be an admin
-// We apply both middleware to every route in this file
+// All routes protected - must be logged in AND admin
 router.use(protect);
 router.use(adminOnly);
 
 // ─── ORDERS ───────────────────────────────────────────────
 
 // GET /api/admin/orders
-// Returns all orders, newest first
 router.get('/orders', async (req, res) => {
   try {
     const orders = await Order.find().sort({ createdAt: -1 });
@@ -29,22 +22,17 @@ router.get('/orders', async (req, res) => {
 });
 
 // PUT /api/admin/orders/:id/status
-// Updates the status of a specific order
 router.put('/orders/:id/status', async (req, res) => {
   try {
     const { status } = req.body;
-
-    // Find the order and update its status
     const updatedOrder = await Order.findByIdAndUpdate(
       req.params.id,
       { status },
-      { new: true } // returns the updated document, not the old one
+      { new: true }
     );
-
     if (!updatedOrder) {
       return res.status(404).json({ message: 'Order not found' });
     }
-
     res.json(updatedOrder);
   } catch (error) {
     res.status(500).json({ message: 'Failed to update order status', error: error.message });
@@ -54,7 +42,6 @@ router.put('/orders/:id/status', async (req, res) => {
 // ─── PRODUCTS ─────────────────────────────────────────────
 
 // GET /api/admin/products
-// Returns all products (flowers + gifts)
 router.get('/products', async (req, res) => {
   try {
     const products = await Product.find().sort({ category: 1, name: 1 });
@@ -64,16 +51,66 @@ router.get('/products', async (req, res) => {
   }
 });
 
-// DELETE /api/admin/products/:id
-// Deletes a product by ID
-router.delete('/products/:id', async (req, res) => {
+// POST /api/admin/products
+// Creates a new product
+router.post('/products', async (req, res) => {
   try {
-    const deleted = await Product.findByIdAndDelete(req.params.id);
+    const { name, price, image, category, color, description, availableQuantity } = req.body;
 
-    if (!deleted) {
+    const newProduct = new Product({
+      name,
+      price: Number(price),
+      image,
+      category,
+      color: color || null,
+      description: description || '',
+      availableQuantity: Number(availableQuantity) || 100,
+    });
+
+    const savedProduct = await newProduct.save();
+    res.status(201).json(savedProduct);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to create product', error: error.message });
+  }
+});
+
+// PUT /api/admin/products/:id
+// Updates an existing product
+router.put('/products/:id', async (req, res) => {
+  try {
+    const { name, price, image, category, color, description, availableQuantity } = req.body;
+
+    const updatedProduct = await Product.findByIdAndUpdate(
+      req.params.id,
+      {
+        name,
+        price: Number(price),
+        image,
+        category,
+        color: color || null,
+        description: description || '',
+        availableQuantity: Number(availableQuantity),
+      },
+      { new: true }
+    );
+
+    if (!updatedProduct) {
       return res.status(404).json({ message: 'Product not found' });
     }
 
+    res.json(updatedProduct);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to update product', error: error.message });
+  }
+});
+
+// DELETE /api/admin/products/:id
+router.delete('/products/:id', async (req, res) => {
+  try {
+    const deleted = await Product.findByIdAndDelete(req.params.id);
+    if (!deleted) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
     res.json({ message: 'Product deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: 'Failed to delete product', error: error.message });
@@ -83,10 +120,8 @@ router.delete('/products/:id', async (req, res) => {
 // ─── USERS ────────────────────────────────────────────────
 
 // GET /api/admin/users
-// Returns all registered users (without their passwords)
 router.get('/users', async (req, res) => {
   try {
-    // .select('-password') tells mongoose to exclude the password field
     const users = await User.find().select('-password').sort({ createdAt: -1 });
     res.json(users);
   } catch (error) {
@@ -94,13 +129,11 @@ router.get('/users', async (req, res) => {
   }
 });
 
-// ─── DASHBOARD STATS ──────────────────────────────────────
+// ─── STATS ────────────────────────────────────────────────
 
 // GET /api/admin/stats
-// Returns quick summary numbers for the dashboard overview
 router.get('/stats', async (req, res) => {
   try {
-    // Run all counts at the same time using Promise.all for efficiency
     const [
       totalOrders,
       pendingOrders,
@@ -117,7 +150,6 @@ router.get('/stats', async (req, res) => {
       Product.countDocuments(),
     ]);
 
-    // Calculate total revenue from all paid orders
     const revenueData = await Order.aggregate([
       { $match: { paymentStatus: 'paid' } },
       { $group: { _id: null, total: { $sum: '$totalAmount' } } },
@@ -134,7 +166,6 @@ router.get('/stats', async (req, res) => {
       totalProducts,
       totalRevenue,
     });
-
   } catch (error) {
     res.status(500).json({ message: 'Failed to fetch stats', error: error.message });
   }

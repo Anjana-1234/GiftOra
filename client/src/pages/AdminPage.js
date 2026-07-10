@@ -39,6 +39,7 @@ function AdminPage() {
   const [formSubmitting, setFormSubmitting] = useState(false);
   const [formError, setFormError] = useState(null);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!user) { navigate('/login'); return; }
     if (!user.isAdmin) { navigate('/'); return; }
@@ -210,7 +211,7 @@ function AdminPage() {
   return (
     <div style={{ padding: '30px', maxWidth: '1200px', margin: '0 auto' }}>
 
-      <h1 style={{ color: '#94376a', marginBottom: '5px' }}>Admin Dashboard </h1>
+      <h1 style={{ color: '#e91e8c', marginBottom: '5px' }}>Admin Dashboard 🌸</h1>
       <p style={{ color: '#666', marginBottom: '25px' }}>Welcome back, {user?.name}</p>
 
       {/* Tab navigation */}
@@ -331,7 +332,7 @@ function AdminPage() {
                           backgroundColor: product.category === 'flower' ? '#fff0f5' : '#f0fff0',
                           color: product.category === 'flower' ? '#e91e8c' : '#2d6a2d',
                         }}>
-                          {product.category === 'flower' ? ' Flower' : ' Gift'}
+                          {product.category === 'flower' ? '🌸 Flower' : '🎁 Gift'}
                         </span>
                       </td>
                       <td style={tdStyle}>Rs. {product.price.toLocaleString()}</td>
@@ -587,8 +588,8 @@ function AdminPage() {
                   required
                   style={inputStyle}
                 >
-                  <option value="flower"> Flower</option>
-                  <option value="gift"> Gift</option>
+                  <option value="flower">🌸 Flower</option>
+                  <option value="gift">🎁 Gift</option>
                 </select>
               </label>
 

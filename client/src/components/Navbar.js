@@ -9,9 +9,7 @@ function Navbar() {
   const { getCartCount } = useCart();
   const { user, logout } = useAuth();
   const isAdmin = user && (user.isAdmin === true);
-  const location = useLocation(); // to highlight active link
-
-  // Controls mobile hamburger menu
+  const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
 
   // Returns true if the current URL matches the given path
@@ -19,23 +17,8 @@ function Navbar() {
     return location.pathname === path;
   }
 
-  // Style for desktop nav links
-  function navLinkStyle(path) {
-    
-    return {
-      color: isActive(path) ? '#e91e8c' : 'white',
-      textDecoration: 'none',
-      fontSize: '15px',
-      fontWeight: isActive(path) ? 'bold' : 'normal',
-      padding: '6px 4px',
-      borderBottom: isActive(path) ? '3px solid white' : '3px solid transparent',
-      transition: 'all 0.2s'
-    };
-  }
-
   return (
     <>
-      {/* Main navbar */}
       <nav style={{
         backgroundColor: '#ffffff',
         padding: '15px 20px',
@@ -45,7 +28,7 @@ function Navbar() {
         boxShadow: '0 2px 15px rgba(207, 21, 124, 0.3)'
       }}>
 
-        {/* Inner wrapper - rounded pill shape like sample */}
+        {/* Inner wrapper - rounded pill shape */}
         <div style={{
           display: 'flex',
           justifyContent: 'space-between',
@@ -111,7 +94,7 @@ function Navbar() {
                 style={{
                   color: 'white',
                   textDecoration: 'none',
-                  fontSize: 'px',
+                  fontSize: '16px',
                   fontWeight: isActive(link.to) ? 'bold' : '500',
                   padding: '6px 4px',
                   borderBottom: isActive(link.to)
@@ -178,6 +161,8 @@ function Navbar() {
                 <span style={{ color: 'white', fontSize: '14px' }}>
                   Hi, {user.name.split(' ')[0]}
                 </span>
+
+                {/* Only show if user is admin */}
                 {isAdmin && (
                   <Link to="/admin" style={{
                     color: 'white',
@@ -191,6 +176,7 @@ function Navbar() {
                     ⚙️ Admin
                   </Link>
                 )}
+
                 <button
                   onClick={logout}
                   style={{
@@ -252,7 +238,7 @@ function Navbar() {
           <div style={{
             maxWidth: '1200px',
             margin: '10px auto 0',
-            backgroundColor: 'rgba(255,255,255,0.1)',
+            backgroundColor: '#832c5c',
             borderRadius: '12px',
             padding: '15px 20px',
             display: 'flex',
